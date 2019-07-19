@@ -57,7 +57,7 @@ def Time_conv(Time):
   #  print(data)
     return data
 
-def carve_file(f,blocksize,quality,Spath):  #blocksize-розмір блоку для аналізу; quality- якість
+def carve_file(f,blocksize,quality,Spath):
     SignStr = b'\x44\x48\x41\x56\xFD'
 #    SignStr = b'\x44\x48\x41\x56'
     SignEnd = b'\x64\x68\x61\x76'
@@ -91,14 +91,14 @@ def carve_file(f,blocksize,quality,Spath):  #blocksize-розмір блоку для аналізу;
             if i == 0:
                 StartOffset = offsetSt
                 FirstCam = int.from_bytes(buf[offsetSt+6:offsetSt+8],byteorder='little')+1
-                FirstDate_ = int.from_bytes((buf[offsetSt + 16:offsetSt + 20]),byteorder='little')  # зчитування в int little endian
-                FirstDate = int.from_bytes((buf[offsetSt + 16:offsetSt + 20]),byteorder='little') # зчитування в int little endian
+                FirstDate_ = int.from_bytes((buf[offsetSt + 16:offsetSt + 20]),byteorder='little')  # int little endian
+                FirstDate = int.from_bytes((buf[offsetSt + 16:offsetSt + 20]),byteorder='little') # int little endian
                 FirstQual = int.from_bytes(buf[offsetSt + 29:offsetSt + 30],byteorder='big')
                 i = 1
             else:
                 cam = int.from_bytes(buf[offsetSt + 6:offsetSt + 8], byteorder='little') + 1
 
-                dateK = int.from_bytes((buf[offsetSt + 16:offsetSt + 20]),byteorder='little') # зчитування в int little endian
+                dateK = int.from_bytes((buf[offsetSt + 16:offsetSt + 20]),byteorder='little') #int little endian
                 delta = dateK - FirstDate
                 Qual = int.from_bytes(buf[offsetSt + 29:offsetSt + 30],byteorder = 'big')
 #                print (delta)
@@ -126,8 +126,8 @@ def carve_file(f,blocksize,quality,Spath):  #blocksize-розмір блоку для аналізу;
                             print(filename)
                         StartOffset = offsetSt
                         FirstCam = int.from_bytes(buf[offsetSt + 6:offsetSt + 8], byteorder='little') + 1
-                        FirstDate = int.from_bytes((buf[offsetSt + 16:offsetSt + 20]),byteorder='little')  # зчитування в int little endian
-                        FirstDate_ = int.from_bytes((buf[offsetSt + 16:offsetSt + 20]),byteorder='little')  # зчитування в int little endian
+                        FirstDate = int.from_bytes((buf[offsetSt + 16:offsetSt + 20]),byteorder='little')  #int little endian
+                        FirstDate_ = int.from_bytes((buf[offsetSt + 16:offsetSt + 20]),byteorder='little')  #int little endian
                         FirstQual = int.from_bytes(buf[offsetSt + 29:offsetSt + 30], byteorder='big')
                         i = 1
                         k = k + 1
@@ -148,7 +148,7 @@ def carve_file(f,blocksize,quality,Spath):  #blocksize-розмір блоку для аналізу;
 #        print (Time_List)
 #        print (Qual_List)
         print('chunk_' + str(l))
-        print('Скопійовано '+str(k)+ ' файл(-ів)')
+        print('Copy '+str(k)+ ' -s')
     return m.hexdigest()
 #    return SOF_List
 
