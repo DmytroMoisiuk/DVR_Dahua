@@ -114,7 +114,7 @@ def carve_file(f,blocksize,quality,Spath):
                             #time_e = Time_conv(FirstDate)
 
                             #filename = "N:\start_"+ time_s + '_' + str(int(l * blocksize + StartOffset)) + "_" + str(int(l * blocksize + EndOffset)) + "_" + "Cam_" + str(FirstCam) + '.dav'
-                            filename = Spath +  "\Cam_"+ str(FirstCam)+ '_' + Time_conv(FirstDate_) + '-'+ Time_conv(FirstDate)+'_' + str(int(l * blocksize + StartOffset)) + "_" + str(int(l * blocksize + EndOffset)) + '.dav'
+                            filename = Spath +  "\Cam_"+ str(FirstCam)+ '_' + Time_conv(FirstDate_) + '-'+ Time_conv(FirstDate)+'_' + str(int(l * blocksize + StartOffset+jump)) + "_" + str(int(l * blocksize + EndOffset+jump)) + '.dav'
 
                             copy_file = open(filename,'wb')
                             copy_file.write(subdata)
@@ -136,7 +136,7 @@ def carve_file(f,blocksize,quality,Spath):
         if (c == 0)and (StartOffset != 0) and (EndOffset != 0) :
             if (FirstQual == quality) or (quality == all):
                 subdata = buf[StartOffset:EndOffset]
-                filename = Spath +  "\Cam_"+ str(FirstCam)+ '_' + Time_conv(FirstDate_)+ '-'+ Time_conv(FirstDate)+'_' + str(int(l * blocksize + StartOffset)) + "_" + str(int(l * blocksize + EndOffset)) +  '.dav'
+                filename = Spath +  "\Cam_"+ str(FirstCam)+ '_' + Time_conv(FirstDate_)+ '-'+ Time_conv(FirstDate)+'_' + str(int(l * blocksize + StartOffset+jump)) + "_" + str(int(l * blocksize + EndOffset+jump)) +  '.dav'
                 copy_file = open(filename, 'wb')
                 copy_file.write(subdata)
                 copy_file.close()
@@ -156,6 +156,8 @@ def carve_file(f,blocksize,quality,Spath):
 
 #f=open('L:\TOSHIBA HDWD110.001','rb')    # Work with RAW image
 f=open('\\\\.\\PhysicalDrive7','rb') #  Work with connected Drive
+jump=0 # bytes
+f.seek(jump,0)#move the file pointer forward by jump bytes from start of the file
 Spath = "d:\Video" # Destination path 
 blocksize=2**30  # Block size
 quality = 12   # Quality of video frames. For all type of quality use 'all' without quotation marks.
