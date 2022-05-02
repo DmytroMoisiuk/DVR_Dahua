@@ -1,5 +1,6 @@
 ''' Python 3.7  for Dahua  by Dmytro Moisiuk '''
-'''Script for recovering video from DVR Dahua DHI-HCVR4104HS-S2 
+'''Script for carving video from DVR Dahua
+Tested model: Dahua DHI-HCVR4104HS-S2, Dahua DHI-HCVR5108C-S3, EZ-IP NVR1A04-4P  
 The following parameters should be changes at the end of the script:
 f- image for analysis; 
 blocksize-block size for analysis; 
@@ -12,20 +13,44 @@ import sys
 import hashlib
 import re
 import binascii
+import wmi
 
 
 def Time_conv(Time):
     Time_List = ['Time']
     Time_List.append(hex(Time))
-    c = int(Time_List[1][4],16)
-    d = int(Time_List[1][5],16)
-    b = int(Time_List[1][3],16)
-    a = int(Time_List[1][2],16)
-    d = int(Time_List[1][5],16)
-    e = int(Time_List[1][6], 16)
-    f = int(Time_List[1][7], 16)
-    g = int(Time_List[1][8], 16)
-    h = int(Time_List[1][9], 16)
+    try:
+        c = int(Time_List[1][4],16)
+    except:
+       print(error) 
+    try:
+        d = int(Time_List[1][5],16)
+    except:
+        print(error)
+    try:
+        b = int(Time_List[1][3],16)
+    except:
+        print(error)
+    try:
+        a = int(Time_List[1][2],16)
+    except:
+        print(error)
+    try:    
+        e = int(Time_List[1][6],16)
+    except:
+        print(error)    
+    try:
+        f = int(Time_List[1][7],16)
+    except:
+        print(error)
+    try:
+        g = int(Time_List[1][8],16)
+    except:
+        print(error)
+    try:
+        h = int(Time_List[1][9],16)
+    except:
+        print(error)
     #b = int(b,16)
     #print(b)
     if (((c % 4)*8 + d // 2))<10:
@@ -110,11 +135,17 @@ def carve_file(f,blocksize,quality,Spath):
                         EndOffset = offsetSt-1
                         subdata = buf[StartOffset:EndOffset]
                         if (FirstQual == quality) or (quality == all):
-                            time_s = Time_conv(FirstDate)
+                            try:
+                                time_s = Time_conv(FirstDate)
+                            except:
+                                time_s = '000000'
                             #time_e = Time_conv(FirstDate)
 
                             #filename = "N:\start_"+ time_s + '_' + str(int(l * blocksize + StartOffset)) + "_" + str(int(l * blocksize + EndOffset)) + "_" + "Cam_" + str(FirstCam) + '.dav'
-                            filename = Spath +  "\Cam_"+ str(FirstCam)+ '_' + Time_conv(FirstDate_) + '-'+ Time_conv(FirstDate)+'_' + str(int(l * blocksize + StartOffset+jump)) + "_" + str(int(l * blocksize + EndOffset+jump)) + '.dav'
+                            try:
+                                filename = Spath +  "\Cam_"+ str(FirstCam)+ '_' + Time_conv(FirstDate_) + '-'+ Time_conv(FirstDate)+'_' + str(int(l * blocksize + StartOffset+jump)) + "_" + str(int(l * blocksize + EndOffset+jump)) + '.dav'
+                            except:
+                                filename = Spath +  "\Cam_"+ str(FirstCam)+ '_' + '000000' + '-'+ '000000'+'_' + str(int(l * blocksize + StartOffset+jump)) + "_" + str(int(l * blocksize + EndOffset+jump)) + '.dav'
 
                             copy_file = open(filename,'wb')
                             copy_file.write(subdata)
@@ -154,12 +185,41 @@ def carve_file(f,blocksize,quality,Spath):
 
 '''you need to make changes '''
 
-#f=open('L:\TOSHIBA HDWD110.001','rb')    # Work with RAW image
-f=open('\\\\.\\PhysicalDrive7','rb') #  Work with connected Drive
-jump=0 # bytes
-f.seek(jump,0)#move the file pointer forward by jump bytes from start of the file
-Spath = "d:\Video" # Destination path 
+
+#************* Start source block***************#
+
+Disk_List = ['Disk List']
+Disk_info = ['Disk info']
+c = wmi.WMI()
+for diskDrive in c.query("SELECT * FROM Win32_DiskDrive"):
+    Disk_List.append(diskDrive.Name)
+    Disk_info.append(diskDrive.model)
+#    print(Disk_List)
+l = 1
+print("Available drives:")
+while l < len(Disk_List):
+    print(l, ".", Disk_List[l]," Model:",Disk_info[l])
+    l += 1
+cmd = input("Enter number: ")    
+ 
+#f=open('\\\\.\\PhysicalDrive1','rb') #  Work with connected Drive
+f=open(Disk_List[int(cmd)],'rb')
+#f=open('L:\TOSHIBA HDWD110.001','rb')    # Work with RAW image  
+
+#****************End source block*******************#
+
+
+print("Enter destination path:   Example: H:\Video")
+cmd = input("Enter path: ")    
+Spath = cmd
+#Spath = "H:\Video_Ez-IP" # Destination path   
+print(Spath)
+
+jump=0 # bytes multiple sector size (example:1174305148928)
+f.seek(jump,0) #move the file pointer forward by jump bytes from start of the file
+print('jump to: ', jump ,'  ok')
 blocksize=2**30  # Block size
-quality = 12   # Quality of video frames. For all type of quality use 'all' without quotation marks.
+quality = all   # Quality of video frames. For all type of quality use 'all' without quotation marks.
+
 print(carve_file(f,blocksize,quality,Spath))  #f- image for analysis; blocksize-block size for analysis; quality - determine by byte with offset 0x1D in the integer from the beginning of the signature 0x44484156FD;
 
