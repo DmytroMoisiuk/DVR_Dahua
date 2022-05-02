@@ -4,7 +4,9 @@ Script for recovering video from DHFS4.1
 
 #### Tested devices:
 
-Dahua DHI-HCVR4104HS-S2.
+- Dahua DHI-HCVR4104HS-S2
+- Dahua DHI-HCVR5108C-S3
+- EZ-IP NVR1A04-4P
 
 
 #### Usage:
